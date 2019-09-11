@@ -1,0 +1,17 @@
+{
+  "name": "eventshuffle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest --coverage --forceExit"
+  },
+  "author": "Igsu-Bravo",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "24.9.0",
+    "mongoose": "5.7.0",
+    "server": "1.0.19"
+  }
+}
