@@ -1,10 +1,10 @@
 {
   "name": "eventshuffle",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Event scheduler application backend",
+  "main": "main.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node main.js",
     "test": "jest --coverage --forceExit"
   },
   "author": "Igsu-Bravo",
@@ -12,6 +12,7 @@
   "dependencies": {
     "jest": "24.9.0",
     "mongoose": "5.7.0",
-    "server": "1.0.19"
+    "server": "1.0.19",
+    "uuid": "^3.3.3"
   }
 }

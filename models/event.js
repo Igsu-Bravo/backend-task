@@ -1,16 +1,20 @@
 // event.js data model
-const mongoose = require('mongoose');
-const uuid = require('node-uuid');
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/event');
+const mongoose = require('mongoose')
+const uuidv1 = require('uuid/v1')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/events')
 
+const date = { type: Date, required: true }
 
 const eventSchema = mongoose.Schema({
-  _id: { type: String, default: uuid.v1 }, // UUIDs are more reliable in the long run
+  _id: { type: String, default:  uuidv1 }, // UUIDs are more reliable in the long run
   name: { type: String, requried: true },
-  dates: [{ type: Date, required: true }],
+  dates: [ date ],
   votes: [
-    { date: { ref: 'Date', people: [String] } }
+    { 
+      date: date,
+      people: [ String ]
+    }
   ]
 });
 
-module.exports = mongoose.model('Event', eventSchema);
+module.exports = mongoose.model('Event', eventSchema)
