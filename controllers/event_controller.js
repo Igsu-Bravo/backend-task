@@ -6,19 +6,20 @@ exports.getAll = async ctx => {
 }
 
 exports.getById = async ctx => {
-    return Event.findById(ctx.params.id).lean().exec()
+  // TODO: do something in case id is not found
+  return Event.findById(ctx.params.id).lean().exec()
 }
 
 exports.create = async ctx => {
-// TODO: check on input, use ifs and elses, make sure errors are handles and stuff
+  // TODO: check on input, use ifs and elses, make sure errors are handled
   const item = new Event({
     name: ctx.data.name,
-    dates: ctx.data.dates 
+    dates: ctx.data.dates
   })
 
   await item.save() // We kindly wait for this to return something
 
-  return status(201).json({"id": item.id})
+  return status(201).json({ "id": item.id })
 }
 
 exports.addVote = async ctx => {
