@@ -5,16 +5,16 @@ const moment = require('moment')
 /** getAll returns object with all events */
 exports.getAll = async ctx => {
 
-  let query = await Event.find().lean().exec(), response = {events:[]}
+  let query = await Event.find().lean().exec(), response = { events: [] }
 
-  if (Array.isArray(query) && query.length ) {
+  if (Array.isArray(query) && query.length) {
     query.forEach(event => {
-      response.events.push( { name: event.name, id: event._id })
+      response.events.push({ name: event.name, id: event._id })
     })
     return status(200).json(response)
   }
   console.log(query)
-  return status(200).json({message: "no events found!"})
+  return status(200).json({ message: "no events found!" })
 }
 
 /**  */
@@ -38,15 +38,14 @@ exports.create = async ctx => {
 
 /**  */
 exports.addVote = async ctx => {
-  let { votes: dates, name } = ctx.data, 
-  { id } = ctx.params, 
-  event = await Event.findById(ctx.params.id).lean().exec()
+  let { name } = ctx.data,
+    { id } = ctx.params,
+    event = await Event.findById(ctx.params.id).lean().exec(),
+    usableDates = Array.from(event.dates, date => moment(date)),
+    paramsDates = Array.from(ctx.data.votes, vote => moment(vote))
 
-  dates.forEach(date => {
+  // TODO: finish logic
 
-  })
-  
-  console.log(dates, event.dates) 
   //const set = { $set: { name: ctx.data.name,  } }
   //await Event.findByIdAndUpdate(ctx.params.id, set).exec()
   //return Event.find().lean().exec()
