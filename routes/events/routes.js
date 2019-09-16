@@ -9,7 +9,7 @@ const endpoints = [
     get(`${apiBasePath}/:id`, event.getById), // READY
     post(`${apiBasePath}`, event.create), // READY
     post(`${apiBasePath}/:id/vote`, event.addVote),
-    get(`${apiBasePath}/:id/results`, event.resutls)
+    get(`${apiBasePath}/:id/results`, event.results)
 ]
 
 module.exports = endpoints

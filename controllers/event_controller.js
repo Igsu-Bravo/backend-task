@@ -39,17 +39,23 @@ exports.create = async ctx => {
 exports.addVote = async ctx => {
   let { name, votes: params } = ctx.data,
     { id } = ctx.params,
-    { votes, dates } = await Event.findById(id).lean().exec()
+    { votes, dates } = await Event.findById(id).lean().exec(),
+    data = buildVotes(params, votes, dates, name)
 
-  let test = buildVotes(params, votes, dates, name)
+  if (data.length && Array.isArray(data)) await Event.findByIdAndUpdate(id, {votes: data}).exec()
 
-  await Event.findByIdAndUpdate(id, { votes: test }).exec()
-  return Event.find().lean().exec()
+  let event = await Event.find().lean().exec()
+  return status(200).json({ event })
 }
 
 /**  */
 exports.results = async ctx => {
-  // TODO: results logic
+  let { id }  = ctx.params,
+    { votes } = await Event.findById(id).lean().exec()
+
+    console.log(votes)
+
+    return status(200).json({ votes })
 }
 
 /** Functions */
