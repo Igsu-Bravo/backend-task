@@ -1,6 +1,5 @@
 const { status, json } = require('server/reply')
 const Event = require('../models/event')
-const moment = require('moment')
 
 /** getAll returns object with all events */
 exports.getAll = async ctx => {
@@ -31,28 +30,54 @@ exports.create = async ctx => {
     dates: ctx.data.dates
   })
 
-  await item.save() // We kindly wait for this to return something
+  await item.save()
 
   return status(201).json({ "id": item.id })
 }
 
 /**  */
 exports.addVote = async ctx => {
-  let { name } = ctx.data,
+  let { name, votes: params } = ctx.data,
     { id } = ctx.params,
-    event = await Event.findById(ctx.params.id).lean().exec(),
-    usableDates = Array.from(event.dates, date => moment(date)),
-    paramsDates = Array.from(ctx.data.votes, vote => moment(vote))
+    { votes, dates } = await Event.findById(id).lean().exec()
 
-  // TODO: finish logic
+  let test = buildVotes(params, votes, dates, name)
 
-  //const set = { $set: { name: ctx.data.name,  } }
-  //await Event.findByIdAndUpdate(ctx.params.id, set).exec()
-  //return Event.find().lean().exec()
-  return status(200)
+  await Event.findByIdAndUpdate(id, { votes: test }).exec()
+  return Event.find().lean().exec()
 }
 
 /**  */
 exports.results = async ctx => {
   // TODO: results logic
+}
+
+/** Functions */
+
+const buildVotes = (params, votes, usableDates, name) => {
+  let _votes = [], referenceArray = Array.from(votes, vote => vote.date)
+
+  params.forEach(param => {
+    if (usableDates.includes(param)) {
+      if (Array.isArray(votes) && votes.length) {
+        _votes = votes
+        _votes.forEach(vote => {
+          if (vote.date === param && !vote.people.includes(name)) {
+            vote.people.push(name)
+            return _votes
+          }
+          else if (!referenceArray.includes(param)) {
+            referenceArray.push(param)
+            _votes.push({ date: param, people: [name] })
+            return _votes
+          }
+        })
+      } else {
+        _votes.push({ date: param, people: [name] })
+        return _votes
+      }
+    }
+  })
+
+  return _votes
 }
