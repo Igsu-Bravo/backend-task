@@ -1,5 +1,5 @@
 const { get, post } = require('server/router')
-const event = require('../../controllers/event_controller.js')
+const event = require('../../controllers/events/event_controller.js')
 
 const apiBasePath = '/api/v1/event'
 

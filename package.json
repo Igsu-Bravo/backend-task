@@ -4,15 +4,16 @@
   "description": "Event scheduler application backend",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
-    "test": "jest --coverage --forceExit"
+    "start": "node main.js"
   },
   "author": "Igsu-Bravo",
   "license": "ISC",
   "dependencies": {
-    "jest": "24.9.0",
     "mongoose": "5.7.0",
     "server": "1.0.19",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.4.0"
   }
 }

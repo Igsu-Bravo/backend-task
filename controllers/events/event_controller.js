@@ -1,9 +1,9 @@
-const { status, json } = require('server/reply')
-const Event = require('../models/event')
+const { status } = require('server/reply')
+const Event = require('../../models/events/event')
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 
 /** Returns all events' ids and names */
-exports.getAll = async ctx => {
+exports.getAll = async () => {
 
   let query = await Event.find().lean().exec(), response = { events: [] }
 
