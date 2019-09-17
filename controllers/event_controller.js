@@ -63,8 +63,7 @@ exports.results = async ctx => {
 const buildResults = (id, event) => {
 
   let results = { id, name: event.name, suitableDates: [] },
-    allParticipants = [],
-    foundMatch = false
+    allParticipants = []
 
   event.votes.forEach(vote => {
     vote.people.forEach(participant => {
@@ -75,17 +74,15 @@ const buildResults = (id, event) => {
   if (allParticipants.length) {
     for (let x = 0; x < event.votes.length; x++) {
       for (let ix = 0; ix < allParticipants.length; ix++) {
-        if (!event.votes[x].people.includes(allParticipants[ix])) break
+        if (!event.votes[x].people.includes(allParticipants[ix]) || event.votes[x].people.length < allParticipants.length) break
         else {
-          foundMatch = true
-          results.suitableDates.push({ date: event.votes[x].date, people: allParticipants })
+          if (results.suitableDates.filter( r => r.date === event.votes[x].date).length <= 0) {
+            results.suitableDates.push({ date: event.votes[x].date, people: allParticipants })
+          }
         }
       }
     }
   }
-
-  console.log(results)
-
   return results
 }
 
