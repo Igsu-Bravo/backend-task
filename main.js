@@ -1,11 +1,13 @@
 // Import library
 const server = require('server')
-const { get, post } = server.router
+const { get, error } = server.router
+const { status } = require('server/reply')
+
 const endpoints = require('./routes/events/routes')
 
 const home = get('/', ctx => "Hello there")
 
 //server(home, api)
-server({ security: { csrf: false } }, home, endpoints) /** csrf: false for developing purposes */
+server({ security: { csrf: false } }, home, endpoints, error(ctx => status(500).send(ctx.error.message))) /** csrf: false for developing purposes */
 
 console.log("Welcome!")

@@ -1,7 +1,8 @@
 const { status, json } = require('server/reply')
 const Event = require('../models/event')
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 
-/** getAll returns object with all events */
+/** Returns all events' ids and names */
 exports.getAll = async ctx => {
 
   let query = await Event.find().lean().exec(), response = { events: [] }
@@ -16,49 +17,66 @@ exports.getAll = async ctx => {
   return status(200).json({ message: "no events found!" })
 }
 
-/**  */
+/** Returns a single event with all its data */
 exports.getById = async ctx => {
   // TODO: do something in case id is not found
-  return Event.findById(ctx.params.id).lean().exec()
+  let event = await Event.findById(ctx.params.id).lean().exec()
+  if (event != null) return event
+  else return status(404).send('Event not found')
 }
 
-/**  */
+/** Creates a new event with dates */
 exports.create = async ctx => {
-  // TODO: check on input, use ifs and elses, make sure errors are handled
-  const item = new Event({
-    name: ctx.data.name,
-    dates: ctx.data.dates
+  let { dates } = ctx.data,
+    validDates = true
+
+  if (dates.length == 0) validDates = false
+  dates.forEach( date => {
+    if (!date.match(dateRegex)) validDates = false
   })
 
-  await item.save()
-
-  return status(201).json({ "id": item.id })
+  if (validDates) {
+    const item = new Event({
+      name: ctx.data.name,
+      dates: ctx.data.dates
+    })  
+    await item.save()  
+    return status(201).json({ "id": item.id })
+  } else return status(400).send('Invalid date input: dates should not be empty and should match this format: yyyy-mm-dd')
 }
 
-/**  */
+/** Adds a vote to an existing event */
 exports.addVote = async ctx => {
   let { name, votes: params } = ctx.data,
     { id } = ctx.params,
     { votes, dates } = await Event.findById(id).lean().exec(),
+    data, validDates = true
+
+  if (params.length < 0) validDates = false
+  params.forEach(param => {
+    if(!param.match(dateRegex)) validDates = false
+  })  
+
+  if (validDates) {
     data = buildVotes(params, votes, dates, name)
-
-  if (data.length && Array.isArray(data)) await Event.findByIdAndUpdate(id, { votes: data }).exec()
-
-  let event = await Event.findById(id).lean().exec()
+    if (data.length && Array.isArray(data)) await Event.findByIdAndUpdate(id, { votes: data }).exec()
+    let event = await Event.findById(id).lean().exec()
   return status(200).json({ event })
+  } else return status(400).send('Invalid date input: votes should not be empty and should match this format: yyyy-mm-dd')
 }
 
-/**  */
+/** Shows a list of dates that are suitable for all participants */
 exports.results = async ctx => {
   let { id } = ctx.params,
     event = await Event.findById(id).lean().exec()
 
-  let results = buildResults(id, event)
-
-  return status(200).json({ results })
+  if (event != null) {
+    let results = buildResults(id, event)
+    return status(200).json({ results })
+  } else return status(404).send('Invalid id')
 }
 
-/** Functions */
+/** ----- Functions ----- */
 
 const buildResults = (id, event) => {
 
