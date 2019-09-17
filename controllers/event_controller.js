@@ -42,23 +42,52 @@ exports.addVote = async ctx => {
     { votes, dates } = await Event.findById(id).lean().exec(),
     data = buildVotes(params, votes, dates, name)
 
-  if (data.length && Array.isArray(data)) await Event.findByIdAndUpdate(id, {votes: data}).exec()
+  if (data.length && Array.isArray(data)) await Event.findByIdAndUpdate(id, { votes: data }).exec()
 
-  let event = await Event.find().lean().exec()
+  let event = await Event.findById(id).lean().exec()
   return status(200).json({ event })
 }
 
 /**  */
 exports.results = async ctx => {
-  let { id }  = ctx.params,
-    { votes } = await Event.findById(id).lean().exec()
+  let { id } = ctx.params,
+    event = await Event.findById(id).lean().exec()
 
-    console.log(votes)
+  let results = buildResults(id, event)
 
-    return status(200).json({ votes })
+  return status(200).json({ results })
 }
 
 /** Functions */
+
+const buildResults = (id, event) => {
+
+  let results = { id, name: event.name, suitableDates: [] },
+    allParticipants = [],
+    foundMatch = false
+
+  event.votes.forEach(vote => {
+    vote.people.forEach(participant => {
+      if (!allParticipants.includes(participant)) allParticipants.push(participant)
+    })
+  })
+
+  if (allParticipants.length) {
+    for (let x = 0; x < event.votes.length; x++) {
+      for (let ix = 0; ix < allParticipants.length; ix++) {
+        if (!event.votes[x].people.includes(allParticipants[ix])) break
+        else {
+          foundMatch = true
+          results.suitableDates.push({ date: event.votes[x].date, people: allParticipants })
+        }
+      }
+    }
+  }
+
+  console.log(results)
+
+  return results
+}
 
 const buildVotes = (params, votes, usableDates, name) => {
   let _votes = [], referenceArray = Array.from(votes, vote => vote.date)
@@ -66,7 +95,7 @@ const buildVotes = (params, votes, usableDates, name) => {
   params.forEach(param => {
     if (usableDates.includes(param)) {
       if (Array.isArray(votes) && votes.length) {
-        _votes = votes
+        _votes = [...votes]
         _votes.forEach(vote => {
           if (vote.date === param && !vote.people.includes(name)) {
             vote.people.push(name)
