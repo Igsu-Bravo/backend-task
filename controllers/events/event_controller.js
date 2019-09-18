@@ -19,7 +19,6 @@ exports.getAll = async () => {
 
 /** Returns a single event with all its data */
 exports.getById = async ctx => {
-  // TODO: do something in case id is not found
   let event = await Event.findById(ctx.params.id).lean().exec()
   if (event != null) return event
   else return status(404).send('Event not found')
@@ -31,7 +30,7 @@ exports.create = async ctx => {
     validDates = true
 
   if (dates.length == 0) validDates = false
-  dates.forEach( date => {
+  dates.forEach(date => {
     if (!date.match(dateRegex)) validDates = false
   })
 
@@ -39,8 +38,8 @@ exports.create = async ctx => {
     const item = new Event({
       name: ctx.data.name,
       dates: ctx.data.dates
-    })  
-    await item.save()  
+    })
+    await item.save()
     return status(201).json({ "id": item.id })
   } else return status(400).send('Invalid date input: dates should not be empty and should match this format: yyyy-mm-dd')
 }
@@ -54,14 +53,14 @@ exports.addVote = async ctx => {
 
   if (params.length < 0) validDates = false
   params.forEach(param => {
-    if(!param.match(dateRegex)) validDates = false
-  })  
+    if (!param.match(dateRegex)) validDates = false
+  })
 
   if (validDates) {
     data = buildVotes(params, votes, dates, name)
     if (data.length && Array.isArray(data)) await Event.findByIdAndUpdate(id, { votes: data }).exec()
     let event = await Event.findById(id).lean().exec()
-  return status(200).json({ event })
+    return status(200).json({ event })
   } else return status(400).send('Invalid date input: votes should not be empty and should match this format: yyyy-mm-dd')
 }
 
@@ -94,7 +93,7 @@ const buildResults = (id, event) => {
       for (let ix = 0; ix < allParticipants.length; ix++) {
         if (!event.votes[x].people.includes(allParticipants[ix]) || event.votes[x].people.length < allParticipants.length) break
         else {
-          if (results.suitableDates.filter( r => r.date === event.votes[x].date).length <= 0) {
+          if (results.suitableDates.filter(r => r.date === event.votes[x].date).length <= 0) {
             results.suitableDates.push({ date: event.votes[x].date, people: allParticipants })
           }
         }
@@ -110,21 +109,18 @@ const buildVotes = (params, votes, usableDates, name) => {
   params.forEach(param => {
     if (usableDates.includes(param)) {
       if (Array.isArray(votes) && votes.length) {
-        _votes = [...votes]
+        if (_votes.length < votes.length) _votes = [...votes]
         _votes.forEach(vote => {
           if (vote.date === param && !vote.people.includes(name)) {
             vote.people.push(name)
-            return _votes
           }
           else if (!referenceArray.includes(param)) {
             referenceArray.push(param)
             _votes.push({ date: param, people: [name] })
-            return _votes
           }
         })
       } else {
         _votes.push({ date: param, people: [name] })
-        return _votes
       }
     }
   })
