@@ -27,7 +27,7 @@ The default URL is `localhost:3000`. To test the endpoints you can use a tool li
 ### Create an event
 
 Send a `POST` request to the endpoint `/api/v1//event` with a body like the following:
-```
+```json
 {
   "name": "Stepping into hyperspace",
   "dates": [
@@ -42,7 +42,7 @@ If the request succeeds, you will get an object with the ID of the newly created
 ### Add a vote to an event
 
 Send a `POST`request to the endpoint `/api/v1//event/{id}/vote`  with a body like the following:
-```
+```json
 {
   "name": "Solveig",
   "votes": [
@@ -52,7 +52,7 @@ Send a `POST`request to the endpoint `/api/v1//event/{id}/vote`  with a body lik
 }
 ```
 If the request succeeds, you will get an object like the following:
-```
+```json
 {
     "event": {
         "_id": "375c2f70-d9e4-11e9-bff0-b7ed76a4104e",
@@ -85,7 +85,7 @@ If the request succeeds, you will get an object like the following:
 ### Get event by ID
 
 Send a `GET` request to the endpoint `/api/v1/event/{id}`. If the ID is found, you will get the following:
-```
+```json
 {
     "_id": "375c2f70-d9e4-11e9-bff0-b7ed76a4104e",
     "dates": [
@@ -117,7 +117,7 @@ Send a `GET` request to the endpoint `/api/v1/event/{id}`. If the ID is found, y
 ### List all events
 
 Send a `GET` request to the endpoint `/api/v1/event/list`. The response contains events' IDs and names:
-```
+```json
 {
     "events": [
         {
@@ -135,7 +135,7 @@ Send a `GET` request to the endpoint `/api/v1/event/list`. The response contains
 ### Get an event's results
 
 Send a `GET` request to the endpoint `/api/v1/event/{id}/results`. If the ID is found, the response contains a list of dates suitable for all event's participants:
-```
+```json
 {
     "results": {
         "id": "375c2f70-d9e4-11e9-bff0-b7ed76a4104e",
