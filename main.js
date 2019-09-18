@@ -1,4 +1,4 @@
-// Import library
+/** Import libraries */
 const server = require('server')
 const { get, error } = server.router
 const { status } = require('server/reply')

@@ -4,8 +4,8 @@ const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 
 /** Returns all events' ids and names */
 exports.getAll = async () => {
-
-  let query = await Event.find().lean().exec(), response = { events: [] }
+  let query = await Event.find().lean().exec(),
+    response = { events: [] }
 
   if (Array.isArray(query) && query.length) {
     query.forEach(event => {
@@ -13,7 +13,6 @@ exports.getAll = async () => {
     })
     return status(200).json(response)
   }
-  console.log(query)
   return status(200).json({ message: "no events found!" })
 }
 
@@ -26,7 +25,7 @@ exports.getById = async ctx => {
 
 /** Creates a new event with dates */
 exports.create = async ctx => {
-  let { dates } = ctx.data,
+  let { dates, name } = ctx.data,
     validDates = true
 
   if (dates.length == 0) validDates = false
@@ -35,10 +34,7 @@ exports.create = async ctx => {
   })
 
   if (validDates) {
-    const item = new Event({
-      name: ctx.data.name,
-      dates: ctx.data.dates
-    })
+    const item = new Event({ name: name, dates: dates })
     await item.save()
     return status(201).json({ "id": item.id })
   } else return status(400).send('Invalid date input: dates should not be empty and should match this format: yyyy-mm-dd')
@@ -49,7 +45,8 @@ exports.addVote = async ctx => {
   let { name, votes: params } = ctx.data,
     { id } = ctx.params,
     { votes, dates } = await Event.findById(id).lean().exec(),
-    data, validDates = true
+    data,
+    validDates = true
 
   if (params.length < 0) validDates = false
   params.forEach(param => {
@@ -70,16 +67,16 @@ exports.results = async ctx => {
     event = await Event.findById(id).lean().exec()
 
   if (event != null) {
-    let results = buildResults(id, event)
+    let results = buildResults(event)
     return status(200).json({ results })
   } else return status(404).send('Invalid id')
 }
 
 /** ----- Functions ----- */
 
-const buildResults = (id, event) => {
-
-  let results = { id, name: event.name, suitableDates: [] },
+/** Returns an object with ID, name and suitableDates if any found */
+const buildResults = event => {
+  let results = { id: event._id, name: event.name, suitableDates: [] },
     allParticipants = []
 
   event.votes.forEach(vote => {
@@ -103,8 +100,10 @@ const buildResults = (id, event) => {
   return results
 }
 
+/** Returns */
 const buildVotes = (params, votes, usableDates, name) => {
-  let _votes = [], referenceArray = Array.from(votes, vote => vote.date)
+  let _votes = [],
+    referenceArray = Array.from(votes, vote => vote.date)
 
   params.forEach(param => {
     if (usableDates.includes(param)) {
