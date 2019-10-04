@@ -26,7 +26,7 @@ The default URL is `localhost:3000`. To test the endpoints you can use a tool li
 
 ### Create an event
 
-Send a `POST` request to the endpoint `/api/v1//event` with a body like the following:
+Send a `POST` request to the endpoint `/api/v1/event` with a body like the following:
 ```json
 {
   "name": "Stepping into hyperspace",
@@ -41,7 +41,7 @@ If the request succeeds, you will get an object with the ID of the newly created
 
 ### Add a vote to an event
 
-Send a `POST`request to the endpoint `/api/v1//event/{id}/vote`  with a body like the following:
+Send a `POST`request to the endpoint `/api/v1/event/{id}/vote`  with a body like the following:
 ```json
 {
   "name": "Solveig",
