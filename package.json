@@ -9,7 +9,7 @@
   "author": "Igsu-Bravo",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "5.7.0",
+    "mongoose": "5.7.5",
     "server": "1.0.19",
     "uuid": "^3.3.3"
   },
